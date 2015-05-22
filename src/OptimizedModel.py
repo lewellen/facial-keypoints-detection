@@ -1,4 +1,6 @@
-class BaselineModel:
+from scipy.stats.stats import mode
+
+class OptimizedModel:
     def fit(self, trainExamples):
         self.expectedValues = {}
         
@@ -6,18 +8,15 @@ class BaselineModel:
             for (key, value) in x.items():
                 if key != "Image":
                     if not key in self.expectedValues:
-                        self.expectedValues[key] = (0.0, 0.0)
+                        self.expectedValues[key] = []
                     
                     if len(value) > 0:
-                        _sum, _count = self.expectedValues[key]
-                        try:
-                            self.expectedValues[key] = (_sum + float(value), _count + 1)
-                        except ValueError:
-                            print value
+                        self.expectedValues[key].append(round(float(value)/0.5,0)*0.5)
                         
         for key in self.expectedValues.keys():
-            _sum, _count = self.expectedValues[key]
-            self.expectedValues[key] = _sum / _count
+            self.expectedValues[key], _ = mode(self.expectedValues[key])
+            self.expectedValues[key] = self.expectedValues[key][0]
+            
 
         return self
     
